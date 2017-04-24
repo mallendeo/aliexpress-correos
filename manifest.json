@@ -14,10 +14,7 @@
       "js": ["inject.js"]
   }],
   "web_accessible_resources": [
-    "main.js",
-    "jquery-3.2.1.min.js",
-    "moment.min.js",
-    "moment-locale-es.js"
+    "main.js"
   ],
   "background": {
     "scripts": [
