@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "Aliexpress Correos Checker",
+  "version": "0.1",
+  "description": "Revisa el estado de tu envío en Correos directamente en AliExpress",
+  "author": "mallendeo",
+  "content_scripts": [{
+      "matches": ["*://trade.aliexpress.com/**"],
+      "js": ["inject.js"]
+  }],
+  "web_accessible_resources": [
+    "main.js",
+    "jquery-3.2.1.min.js",
+    "moment.min.js",
+    "moment-locale-es.js"
+  ],
+  "background": {
+    "scripts": [
+      "moment.min.js",
+      "moment-locale-es.js",
+      "background.js"
+    ]
+  },
+  "permissions": [
+    "*://*.correos.cl/**",
+    "*://*.aliexpress.com/**"
+  ]
+}
