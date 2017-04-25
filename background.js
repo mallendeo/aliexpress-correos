@@ -30,10 +30,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const table = doc.querySelector('.tracking')
       const rows = table.querySelectorAll('tr:nth-child(n+2)')
       const text = n => n.textContent.trim()
-      const shippingCode = doc
-        .querySelector('.datosgenerales td:nth-child(2)')
-        .textContent
-        .trim()
+      const shippingCode = [...doc.querySelectorAll('.titulo')]
+        .find(e => e.textContent.startsWith('Numero'))
+        .textContent.match(/\d+/)
 
       const steps = []
 
