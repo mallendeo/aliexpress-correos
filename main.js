@@ -51,7 +51,7 @@ const getDataFromCorreos = orderId => new Promise((resolve, reject) => {
           return
         }
 
-        resolve({ steps: res.detail, trackingNumbers: nums })
+        resolve({ detail: res.detail, trackingNumbers: nums })
         clearTimeout(timeout)
         document.removeEventListener('CORREOS_RESPONSE', () => {})
       })
@@ -90,39 +90,39 @@ const createBalloon = (position = { top: 0, left: 0 }, promise) => {
   balloon.style.top = `${position.top}px`
   balloon.style.pointerEvents = 'none'
   balloon.style.transform = 'translateX(-40%) translateY(2.2rem)'
-
-  const content = document.createElement('div')
-  content.style.minWidth = '8rem'
+  balloon.style.minWidth = '12rem'
 
   const message = document.createTextNode('Cargando ...')
-  content.appendChild(message)
+  balloon.appendChild(message)
 
-  const list = document.createElement('ul')
+  const list = document.createElement('div')
 
-  promise.then(({ steps }) => {
-    content.removeChild(message)
+  const shippingCode = document.createElement('div')
+  shippingCode.classList.add('bold-text-remind')
+  shippingCode.style.paddingBottom = '12px'
 
-    steps.forEach(step => {
-      const item = document.createElement('li')
-      item.style.minWidth = '8rem'
-      item.style.marginBottom = '1rem'
+  promise.then(({ detail }) => {
+    balloon.removeChild(message)
+
+    shippingCode.textContent = `Número de envío: ${detail.shippingCode}`
+    balloon.appendChild(shippingCode)
+
+    detail.steps.forEach(step => {
+      const item = document.createElement('div')
 
       item.innerHTML = `
-        <strong>${step.status}</strong>
-        <br/>
-        <span>${step.office}</span>
-        <br/>
-        <small>${step.fromNow}</small>
+        <b class="event-line-key">${step.office}</b>
+        <p class="event-line-desc">${step.status}</p>
+        <p class="event-line-time">${step.fromNow}</p>
       `
 
       list.appendChild(item)
     })
+
+    balloon.appendChild(list)
   }).catch(() => {
     message.textContent = 'No existe el pedido.'
   })
-
-  content.appendChild(list)
-  balloon.appendChild(content)
 
   const arrow = document.createElement('a')
   arrow.classList.add('ui-balloon-arrow')

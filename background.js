@@ -30,12 +30,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const table = doc.querySelector('.tracking')
       const rows = table.querySelectorAll('tr:nth-child(n+2)')
       const text = n => n.textContent.trim()
-      const data = []
+      const shippingCode = doc
+        .querySelector('.datosgenerales td:nth-child(2)')
+        .textContent
+        .trim()
+
+      const steps = []
 
       rows.forEach(row => {
         const columns = row.querySelectorAll('td')
         const date = moment(text(columns[1]), 'DD/MM/YYYY HH:mm')
-        data.push({
+        steps.push({
           status: text(columns[0]),
           date: date.valueOf(),
           fromNow: date.fromNow(),
@@ -43,7 +48,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         })
       })
 
-      sendResponse(data)
+      sendResponse({ shippingCode, steps })
     })
 
   return true
