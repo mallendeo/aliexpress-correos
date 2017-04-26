@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Aliexpress Correos Checker",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Revisa el estado de tu envío en Correos directamente en AliExpress",
   "author": "mallendeo",
   "icons": {
