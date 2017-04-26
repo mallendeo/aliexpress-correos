@@ -36,22 +36,44 @@ const jsonp = (() => {
 const getDataFromCorreos = orderId => new Promise((resolve, reject) => {
   jsonp(`${INFO_URL}?orderId=${orderId}`)
     .then(data => {
+      const sinotrans = data.tracking.some(s =>
+        s.officialUrl.includes('sinoair') ||
+        s.officialUrl.includes('sinotrans')
+      )
+
+      if (!sinotrans) {
+        return reject({
+          code: 400,
+          error: 'El envío no es de Sinotrans'
+        })
+      }
+
       const nums = data.tracking.map(track => track.mailNo)
 
       const event = new CustomEvent('CORREOS_REQUEST', { detail: nums })
       document.dispatchEvent(event)
 
       const timeout = setTimeout(() => {
-        reject('Request timeout!')
+        reject({
+          code: 500,
+          error: 'Tiempo de respuesta agotado'
+        })
       }, 10000)
 
       document.addEventListener('CORREOS_RESPONSE', res => {
-        if (res.detail.error) {
-          reject(res.detail)
+        if (res.detail.error === 404) {
+          reject({
+            code: 404,
+            error: 'El envío no existe'
+          })
           return
         }
 
-        resolve({ detail: res.detail, trackingNumbers: nums })
+        resolve({
+          detail: res.detail,
+          trackingNumbers: nums
+        })
+
         clearTimeout(timeout)
         document.removeEventListener('CORREOS_RESPONSE', () => {})
       })
@@ -92,7 +114,7 @@ const createBalloon = (position = { top: 0, left: 0 }, promise) => {
   balloon.style.transform = 'translateX(-40%) translateY(2.2rem)'
   balloon.style.minWidth = '12rem'
 
-  const message = document.createTextNode('Cargando ...')
+  const message = document.createTextNode('Cargando...')
   balloon.appendChild(message)
 
   const list = document.createElement('div')
@@ -120,8 +142,10 @@ const createBalloon = (position = { top: 0, left: 0 }, promise) => {
     })
 
     balloon.appendChild(list)
-  }).catch(() => {
-    message.textContent = 'No existe el pedido.'
+  }).catch(e => {
+    if (e.code) {
+      message.textContent = e.error
+    }
   })
 
   const arrow = document.createElement('a')
